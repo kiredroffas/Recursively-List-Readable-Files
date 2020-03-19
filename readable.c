@@ -15,13 +15,13 @@
 int listFiles(char *directory) {
 	if(access(directory,F_OK) != 0) { //Check access to see if the directory/file exists (F_OK)
 		                          //0 = exists, 1 = doesnt exist
-		fprintf(stderr,"error = %d : %s\n",errno,strerror(errno));
+		fprintf(stderr,"error = %d : %s, %s doesn't exist\n",errno,strerror(errno), directory);
     		return(0);
 	}
 
 	if(access(directory,R_OK) != 0) { //Check access to see if the directory/file is readable (R_OK)
 		                          //0 = readable, 1 = not readable
-		fprintf(stderr,"error = %d : %s\n",errno,strerror(errno));
+		fprintf(stderr,"error = %d : %s, %s isn't readable\n",errno,strerror(errno), directory);
                 return(0);
         }
 	
@@ -32,7 +32,7 @@ int listFiles(char *directory) {
         char filePath[PATH_LENGTH]; //Buffer to hold filepaths
 
 	if( (dir = opendir(directory)) == NULL ) { //Attempt to open directory
-        	fprintf(stderr,"error = %d : %s\n",errno,strerror(errno));
+        	fprintf(stderr,"error = %d : %s, couldn't read %s\n",errno,strerror(errno), directory);
 		return(0);
         }
 	
@@ -55,6 +55,9 @@ int listFiles(char *directory) {
 				//Print the filepath we have/the file we checked
 				printf("%s\n",filePath);
 				//printf("%s/%s\n",directory,entry->d_name); <- could have done this way
+			}
+			else {
+				fprintf(stderr, "error: file %s isn't readable\n",filePath);
 			}
 		}
 		else if(entry->d_type == DT_DIR) { //Else if the file is a directory
